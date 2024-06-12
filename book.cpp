@@ -30,12 +30,12 @@ void Book::readContent(){
     int HEIGHT = PAGE_H;
     
     string path = "./TXT/";
-    filename = path + filename;
+    string dir = path + filename;
     fstream fin;
 
     string str;
 
-    fin.open(filename, ios::in);
+    fin.open(dir, ios::in);
     cout << "readContent ..." << endl;
 
 
@@ -112,12 +112,12 @@ void Book::readContent(){
             str.erase(find, 1);
         }
 
-        if(str.length() > WIDTH){
+        if(str.length() > WIDTH-1){
             for(int i=0; i<WIDTH-1; i++){
                 page_cont[line_cnt][i] = str[i];
             }
             page_cont[line_cnt][WIDTH-1] = '\0';
-            str.erase(0, WIDTH);
+            str.erase(0, WIDTH-1);
         }
         else{
             // To prevent putting endline at the beginning of the page
