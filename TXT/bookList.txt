@@ -1,6 +1,6 @@
 book1.txt T
-book1.txt T
-book1.txt T
+book2.txt T
+book3.txt T
 book1.txt T
 book1.txt T
 book1.txt T
