@@ -147,65 +147,87 @@ void Book::readContent(){
 
 void Book::preview(){
     int cur_page = 0;
-    char op;
-
+    string input;
 
     readContent();
 
-    while(1){
+    while (true) {
         system("clear");
 
-        cout << title << endl << endl;
+        cout << title << "\n\n";
 
-        for(int i=0; i<PAGE_W; i++){
+        for (int i = 0; i < PAGE_W; i++) {
             cout << "=";
         }
-        cout << endl << endl;
+        cout << "\n\n";
 
         page_vec[cur_page]->showPageCont();
 
-        cout << endl;
-        for(int i=0; i<PAGE_W/2-4; i++){
-            cout << " ";
-        }
-        cout << "Page " << cur_page << endl;
+        cout << "\n" << string(PAGE_W / 2 - 4, ' ') << "Page " << cur_page << "\n\n";
 
-        cout << endl;
-        for(int i=0; i<PAGE_W; i++){
+        for (int i = 0; i < PAGE_W; i++) {
             cout << "=";
         }
-        cout << endl;
-    
-        cout << "########################" << endl;
-        cout << "# Next     Page: [ → ] #" << endl;
-        cout << "# Previous Page: [ ← ] #" << endl;
-        cout << "# Back to Menu : [end] #" << endl;
-        cout << "########################" << endl;
+        cout << "\n";
 
-        op = getKey();
-        if(op == 'N'){
-            if(cur_page == page_vec.size()-1){
-                continue;
-            }
-            cur_page++;
-        }
-        else if(op == 'P'){
-            if(cur_page == 0){
-                continue;
-            }
-            cur_page--;
-        }
-        else if(op == 'M'){
-            for(auto& p: page_vec) delete p;
-            page_vec.clear();
-            // for(auto& p: page_vec) delete p;
-            break;
-        }  
+        cout << "########################\n";
+        cout << "# Next Page: [N]       #\n";
+        cout << "# Previous Page: [P]   #\n";
+        cout << "# Jump to Page: [J]    #\n";
+        cout << "# Back to Menu : [M]   #\n";
+        cout << "########################\n";
 
+        cout << "Enter command or page number: ";
+        getline(cin, input);
+
+        if (input.empty()) {
+            continue;
+        }
+
+        char command = toupper(input[0]);
+
+        switch (command) {
+            case 'N':
+                if (cur_page < page_vec.size() - 1) cur_page++;
+                break;
+            case 'P':
+                if (cur_page > 0) cur_page--;
+                break;
+            case 'J':
+                if (isdigit(input[1])) {
+                    int pageNum = stoi(input.substr(1));
+                    if (pageNum >= 0 && pageNum < page_vec.size()) {
+                        goToPage(pageNum);
+                        cur_page = pageNum;
+                    } else {
+                        cout << "Invalid page number.\n";
+                        cin.get();
+                    }
+                }
+                break;
+            case 'M':
+                for (auto& p : page_vec) {
+                    delete p;
+                }
+                page_vec.clear();
+                return;  // Exit the preview function properly
+            default:
+                cout << "Invalid command.\n";
+                cin.get();
+                break;
+        }
     }
-
 }
 
+void Book::goToPage(int pageNum) {
+    if (pageNum < 0 || pageNum >= page_vec.size()) {
+        cout << "Invalid page number." << endl;
+        return;
+    }
+    system("clear");
+    cout << "Jumping to page: " << pageNum << endl;
+    page_vec[pageNum]->showPageCont(); 
+}
 char Book::getKey(){
     char key;
 

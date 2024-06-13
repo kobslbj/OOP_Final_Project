@@ -26,6 +26,7 @@ class Book{
 
         virtual void readContent();
         virtual void preview();
+        void goToPage(int pageNum);
 
         // keyboard
         virtual char getKey();
