@@ -2,8 +2,8 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <sstream> 
-#include <cmath> 
+#include <map>
+#include <sstream>
 #include <algorithm>
 #include "page.h"
 
@@ -55,13 +55,21 @@ class FigBook : public Book{
         // void preview();
 };
 class AnimatedBook : public Book {
-    public:
-        AnimatedBook(string filename, string title, string author, string category);
+public:
+    AnimatedBook(string filename, string title, string author, string category);
+    void readContent() override;
+    void playAnimation();
 };
 
 class MorseCodeBook : public Book {
+    private:
+        map<string, char> morseMap; 
+
     public:
         MorseCodeBook(string filename, string title, string author, string category);
+        void initializeMorseMap();
+        void readContent() override;
+        string decodeMorse(const string& line);
 };
 
 class FormulaBook : public Book {

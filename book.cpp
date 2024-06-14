@@ -3,6 +3,8 @@
 #include <iomanip>
 #include <algorithm>
 #include <cstring>
+#include <thread>
+#include <chrono>
 //===================================//
 //          BOOK DEFINITION          //
 //===================================//
@@ -266,16 +268,17 @@ TxtBook::TxtBook(string filename, string title, string author, string category) 
 //===================================//
 FigBook::FigBook(string filename, string title, string author, string category) : Book::Book(filename, title, author, category) {};
 
-void FigBook::readContent(){
+void FigBook::readContent() {
     int WIDTH = PAGE_W;
     int HEIGHT = PAGE_H;
     
     string path = "./TXT/";
+    string dir = path + filename;
     fstream fin;
 
     string str;
 
-    fin.open(path + filename, ios::in);
+    fin.open(dir, ios::in);
     cout << "readContent ..." << endl;
 
 
@@ -305,7 +308,7 @@ void FigBook::readContent(){
         }
     }
 
-    // Book Title
+    // Book Author
     while(1){
         getline(fin, str);
         const auto find = str.find("Author:");
@@ -317,22 +320,23 @@ void FigBook::readContent(){
             break;
         }
     }
-            
-    // Book content 
+    
+    // Book content
     int page_cnt = 0;
     int line_cnt = 0;
-    int fig_h;
     char** page_cont = new char*[HEIGHT];
-    char** fig_cont;
     bool get_new_page = true;
     bool get_new_line = true;
-    bool write_fig    = false;
+    bool write_fig = false;
     Page* new_page_ptr;
+    int fig_h = 0;
+    char** fig_cont = nullptr;
+    
     while(!fin.eof() || (fin.eof() && !get_new_line)){
         // Construct new page
         if(get_new_page){
             cout << "Get new page ..." << endl;
-            new_page_ptr = new Page (page_cnt, PAGE_W, PAGE_H);
+            new_page_ptr = new Page(page_cnt, PAGE_W, PAGE_H);
             page_cont = new char*[HEIGHT];
             for(int i=0; i<HEIGHT; i++){
                 *(page_cont+i) = new char[WIDTH];
@@ -355,25 +359,24 @@ void FigBook::readContent(){
             str.erase(find, 1);
         }
 
-        if(str.length() > WIDTH){
+        if(str.length() > WIDTH-1){
             for(int i=0; i<WIDTH-1; i++){
                 page_cont[line_cnt][i] = str[i];
             }
             page_cont[line_cnt][WIDTH-1] = '\0';
-            str.erase(0, WIDTH);
+            str.erase(0, WIDTH-1);
         }
         else{
-            // To prevent putting endline at the beginning of the page
+            // Prevent putting endline at the beginning of the page
             if(line_cnt==0 && str.length()==0){
                 get_new_line = true;
                 continue;
             }
 
-
             if(str.find(".fig") != string::npos){
                 cout << "Read Figure ..." << endl;
                 fig_cont = get_figure(fin, &fig_h);
-                
+
                 if (line_cnt + fig_h >= HEIGHT){
                     get_new_page = true;
                     get_new_line = false;
@@ -423,37 +426,37 @@ void FigBook::readContent(){
     }
 }
 
-char** FigBook::get_figure(fstream& fin, int* fig_h){
-    int i;
+char** FigBook::get_figure(fstream& fin, int* fig_h) {
     int line_cnt = 0;
     string str;
-    char** fig_ptr = new char* [PAGE_H];
+    char** fig_ptr = new char*[PAGE_H];
 
-    for(int i=0; i<PAGE_H; i++){
-        *(fig_ptr + i) = new char [PAGE_W];                 
+    for(int i = 0; i < PAGE_H; i++) {
+        fig_ptr[i] = new char[PAGE_W];
+        memset(fig_ptr[i], ' ', PAGE_W - 1); 
+        fig_ptr[i][PAGE_W - 1] = '\0';
     }
 
-    while(1){
+    while(true) {
         getline(fin, str);
-        if(str.find(".figend") != string::npos){
-            *fig_h = line_cnt;
+        if(str.find(".figend") != string::npos) {
+            *fig_h = line_cnt; 
             break;
         }
-
         const auto find = str.find("\r");
-
-        if(find != string::npos){
+        if(find != string::npos) {
             str.erase(find, 1);
         }
-
-        for(i=0; i<str.length(); i++){
+        for(size_t i = 0; i < str.length() && i < PAGE_W - 1; i++) {
             fig_ptr[line_cnt][i] = str[i];
         }
-        fig_ptr[line_cnt][i] = '\0';
+        fig_ptr[line_cnt][str.length()] = '\0'; 
         line_cnt++;
     }
+
     return fig_ptr;
 }
+
 
 //===================================//
 //        FormulaBook DEFINITION     //
@@ -559,10 +562,99 @@ double FormulaBook::evaluateExpression(const string& expression) {
 AnimatedBook::AnimatedBook(string filename, string title, string author, string category)
     : Book(filename, title, author, category) {}
 
+void AnimatedBook::readContent() {
+    Book::readContent();
+    playAnimation();
+}
+
+void AnimatedBook::playAnimation() {
+    for (size_t i = 0; i < page_vec.size(); i++) {
+        system("clear");
+        cout << "Animating Book: " << title << "\n\n";
+        page_vec[i]->showPageCont();
+        std::this_thread::sleep_for(std::chrono::milliseconds(500)); // Adjust the delay as needed
+    }
+}
+
 
 //===================================//
-//        MorseCodeBook DEFINITION   //
+//       MorseCodeBook DEFINITION   //
 //===================================//
 
 MorseCodeBook::MorseCodeBook(string filename, string title, string author, string category)
-    : Book(filename, title, author, category) {}
+    : Book(filename, title, author, category) {
+    initializeMorseMap();
+}
+
+void MorseCodeBook::initializeMorseMap() {
+    morseMap[".-"] = 'A';
+    morseMap["-..."] = 'B';
+    morseMap["-.-."] = 'C';
+    morseMap["-.."] = 'D';
+    morseMap["."] = 'E';
+    morseMap["..-."] = 'F';
+    morseMap["--."] = 'G';
+    morseMap["...."] = 'H';
+    morseMap[".."] = 'I';
+    morseMap[".---"] = 'J';
+    morseMap["-.-"] = 'K';
+    morseMap[".-.."] = 'L';
+    morseMap["--"] = 'M';
+    morseMap["-."] = 'N';
+    morseMap["---"] = 'O';
+    morseMap[".--."] = 'P';
+    morseMap["--.-"] = 'Q';
+    morseMap[".-."] = 'R';
+    morseMap["..."] = 'S';
+    morseMap["-"] = 'T';
+    morseMap["..-"] = 'U';
+    morseMap["...-"] = 'V';
+    morseMap[".--"] = 'W';
+    morseMap["-..-"] = 'X';
+    morseMap["-.--"] = 'Y';
+    morseMap["--.."] = 'Z';
+    morseMap["-----"] = '0';
+    morseMap[".----"] = '1';
+    morseMap["..---"] = '2';
+    morseMap["...--"] = '3';
+    morseMap["....-"] = '4';
+    morseMap["....."] = '5';
+    morseMap["-...."] = '6';
+    morseMap["--..."] = '7';
+    morseMap["---.."] = '8';
+    morseMap["----."] = '9';
+    morseMap[".-.-.-"] = '.';
+    morseMap["--..--"] = ',';
+    morseMap["..--.."] = '?';
+}
+
+void MorseCodeBook::readContent() {
+    // 先調用基類的 readContent 方法
+    Book::readContent();
+
+    for (auto& page : page_vec) {
+        char** pageContent = page->getContent();
+        for (int i = 0; i < PAGE_H; i++) {
+            std::string decodedContent = decodeMorse(pageContent[i]);
+            strcpy(pageContent[i], decodedContent.c_str());
+        }
+    }
+}
+
+string MorseCodeBook::decodeMorse(const string& line) {
+    std::stringstream ss(line);
+    std::string decodedContent, morseCode;
+    while (ss >> morseCode) {
+        if (morseCode == "/") {
+            decodedContent += ' ';
+        } else {
+            auto it = morseMap.find(morseCode);
+            if (it != morseMap.end()) {
+                decodedContent += it->second;
+            } else {
+                decodedContent += '?';
+            }
+        }
+    }
+    return decodedContent;
+}
