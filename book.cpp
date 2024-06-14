@@ -12,6 +12,9 @@ Book::Book(string filename, string title, string author, string category){
     page_vec.reserve(10);
 }
 
+string Book::getFilename(){
+    return filename;
+}   
 
 string Book::getTitle(){
     return title;

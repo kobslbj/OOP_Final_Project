@@ -126,11 +126,16 @@ void Library::operation(char opCode){
             else if(idx == 0)          idx = 1;
             else                       idx = idx + 5;
             break;
-        case 'E': 
-            if(idx == books.size()) exit = true;
-            else if(idx != 0)       books[idx - 1]->preview();
+        case 'E':  
+            if (idx == books.size()) {
+                exit = true;  
+            } else if (idx == 0) {
+                searchBook(); 
+            } else if (idx != 0) {
+                books[idx - 1]->preview(); 
+            }
             break;        
-    } 
+    }
     return;
 }
 
@@ -228,4 +233,80 @@ bool Library::getExit(){
 
 int Library::getIdx(){
     return idx;
+}
+void Library::searchBook() {
+    cout << "********** Search book **********\n";
+    cout << "Index by ...\n";
+    cout << "Press 1 to choose filename\n";
+    cout << "Press 2 to choose title\n";
+    cout << "Press 3 to choose author\n";
+    cout << "Press 4 to choose category\n";
+    cout << "Press 5 to Exit\n";
+    cout << "Enter search type: ";
+    
+    int type;
+    cin >> type;
+
+    if (type == 5) {
+        cout << "Exiting search..." << endl;
+        return;
+    }
+
+    string searchTerm;
+    switch (type) {
+        case 1:
+            cout << "Please enter the filename you want to search: ";
+            break;
+        case 2:
+            cout << "Please enter the title you want to search: ";
+            break;
+        case 3:
+            cout << "Please enter the author you want to search: ";
+            break;
+        case 4:
+            cout << "Please enter the category you want to search: ";
+            break;
+        default:
+            cout << "Invalid search type. Please try again." << endl;
+            return;
+    }
+
+    cin >> searchTerm;
+
+    cout << "You entered: '" << searchTerm << "'" << endl;
+
+    transform(searchTerm.begin(), searchTerm.end(), searchTerm.begin(), ::tolower);
+    cout << "Searching for: '" << searchTerm << "'\n";
+
+    vector<Book*> foundBooks;
+    for (auto& book : books) {
+        string toSearch;
+        switch (type) {
+            case 1: toSearch = book->getFilename(); break;
+            case 2: toSearch = book->getTitle(); break;
+            case 3: toSearch = book->getAuthor(); break;
+            case 4: toSearch = book->getCategory(); break;
+        }
+        transform(toSearch.begin(), toSearch.end(), toSearch.begin(), ::tolower);
+        if (toSearch.find(searchTerm) != string::npos) {
+            foundBooks.push_back(book);
+        }
+    }
+
+    if (foundBooks.empty()) {
+        cout << "No books found." << endl;
+    } else {
+        cout << "These are books related to your search ...\n";
+        int num = 1;
+        for (auto& book : foundBooks) {
+            cout << num++ << ". " << book->getTitle() << " by " << book->getAuthor() << endl;
+        }
+    }
+
+    string tmp;
+    cout << "Press e to continue...";
+    cin >> tmp;
+    if (tmp == "e") {
+        cout << "Continuing..." << endl;
+    }
 }

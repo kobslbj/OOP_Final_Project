@@ -31,6 +31,7 @@ class Book{
         // keyboard
         virtual char getKey();
 
+        string getFilename();
         string getTitle();
         string getAuthor();
         string getCategory();

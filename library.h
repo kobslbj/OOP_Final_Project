@@ -17,6 +17,7 @@ class Library{
         // display function
         virtual void coutMainPage();
         virtual void coutBookIcon(int bookNum);
+        virtual void searchBook(); 
         
         // get function
         virtual int  getIdx();
