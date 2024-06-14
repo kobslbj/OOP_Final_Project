@@ -1,5 +1,8 @@
 #include "book.h"
-
+#include <sstream>
+#include <iomanip>
+#include <algorithm>
+#include <cstring>
 //===================================//
 //          BOOK DEFINITION          //
 //===================================//
@@ -451,3 +454,115 @@ char** FigBook::get_figure(fstream& fin, int* fig_h){
     }
     return fig_ptr;
 }
+
+//===================================//
+//        FormulaBook DEFINITION     //
+//===================================//
+FormulaBook::FormulaBook(string filename, string title, string author, string category)
+    : Book(filename, title, author, category) {}
+
+void FormulaBook::readContent() {
+    // 先調用基類的 readContent 方法
+    Book::readContent();
+    
+    // 然後處理每一頁中的算術公式
+    for (auto& page : page_vec) {
+        char** pageContent = page->getContent();
+        for (int i = 0; i < PAGE_H; i++) {
+            string line(pageContent[i]);
+            size_t pos = line.find("Answer:");
+            if (pos != string::npos) {
+                size_t eq_pos = line.find("=");
+                if (eq_pos != string::npos && eq_pos + 1 < line.length() && line[eq_pos + 1] == '?') {
+                    string expression = line.substr(pos + 7, eq_pos - (pos + 7));
+                    expression.erase(remove_if(expression.begin(), expression.end(), ::isspace), expression.end());
+                    try {
+                        double result = evaluateExpression(expression);
+                        ostringstream oss;
+                        oss << fixed << setprecision(2) << result;
+                        line = line.substr(0, eq_pos + 1) + oss.str();
+                        // 更新頁面內容
+                        strcpy(pageContent[i], line.c_str());
+                    } catch (const invalid_argument& e) {
+                        cerr << "Invalid expression: " << expression << endl;
+                    }
+                }
+            }
+        }
+    }
+}
+
+double FormulaBook::evaluateExpression(const string& expression) {
+    std::istringstream iss(expression);
+    std::vector<double> values;
+    std::vector<char> ops;
+    double val;
+    char op;
+
+    while (iss >> val) {
+        values.push_back(val);
+        if (iss >> op) {
+            ops.push_back(op);
+        } else {
+            break;
+        }
+    }
+
+    // Handle multiplication and division first
+    for (size_t i = 0; i < ops.size(); i++) {
+        if (ops[i] == '*' || ops[i] == '/') {
+            double left = values[i];
+            double right = values[i + 1];
+            double result = 0.0;
+
+            if (ops[i] == '*') {
+                result = left * right;
+            } else {
+                if (right == 0) throw std::invalid_argument("Division by zero");
+                result = left / right;
+            }
+
+            values[i] = result;
+            values.erase(values.begin() + i + 1);
+            ops.erase(ops.begin() + i);
+            i--; // Adjust index to re-evaluate this position
+        }
+    }
+
+    // Handle addition and subtraction
+    while (!ops.empty()) {
+        char curr_op = ops.front();
+        ops.erase(ops.begin());
+        double left = values.front();
+        values.erase(values.begin());
+        double right = values.front();
+        values.erase(values.begin());
+
+        double result = 0.0;
+        if (curr_op == '+') {
+            result = left + right;
+        } else if (curr_op == '-') {
+            result = left - right;
+        }
+
+        values.insert(values.begin(), result);
+    }
+
+    return values.front();
+}
+
+
+//===================================//
+//        AnimatedBook DEFINITION    //
+//===================================//
+
+AnimatedBook::AnimatedBook(string filename, string title, string author, string category)
+    : Book(filename, title, author, category) {}
+
+
+//===================================//
+//        MorseCodeBook DEFINITION   //
+//===================================//
+
+MorseCodeBook::MorseCodeBook(string filename, string title, string author, string category)
+    : Book(filename, title, author, category) {}

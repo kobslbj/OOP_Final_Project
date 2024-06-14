@@ -20,3 +20,7 @@ void Page::showPageCont(){
     }
     return;
 }
+
+char** Page::getContent() { 
+    return content;
+}

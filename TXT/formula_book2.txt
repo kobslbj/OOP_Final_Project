@@ -1,0 +1,41 @@
+type:math book
+Title:VDA MATH BOOK
+Author:LBJ
+
+page1
+
+Question1:
+"In the realm of numerical computations, where the dance of digits orchestrates the symphony of mathematics, we embark on a voyage to uncover the hidden treasure guarded by the equation 4 times 4.
+As we traverse the labyrinth of arithmetic, our minds traverse the vast expanse of possibility, seeking to unveil the answer that lies beyond the veil of uncertainty.
+With each step, we inch closer to the revelation, our calculations weaving a tapestry of logic and reason.
+The simplicity of the question belies the complexity of its solution, yet we persevere, driven by the thirst for knowledge and the thrill of discovery.
+For in this quest, the journey itself is as enriching as the destination, as we unravel the enigma of 4 times 4 and illuminate the path to enlightenment."
+
+Answer:4*4=?
+
+Question2:
+"In the realm of mathematical operations, where numbers intertwine in an intricate ballet of logic and precision, we embark on a quest to decipher the enigmatic puzzle posed by the subtraction of 1 from 8.
+As we delve into the depths of arithmetic, our minds become intrepid explorers navigating the vast expanse of numerical possibility, striving to unveil the elusive solution hidden amidst the numbers.
+With each deduction, we draw closer to unraveling the mystery, our calculations forging a path through the labyrinth of numbers with unwavering determination.
+Though the question may seem simple on the surface, its solution unveils layers of complexity that challenge and inspire us to push the boundaries of our understanding.
+For in this pursuit of mathematical truth, every step taken is a testament to the indomitable spirit of human curiosity and the relentless quest for knowledge."
+
+Answer:8-1=?
+
+Question3:
+"In the realm where numbers converge and operations intertwine, we find ourselves entangled in the intricate dance of arithmetic, poised to unravel the mystery shrouded within the equation 5 times 7 minus 6.
+As we embark on this intellectual journey, our minds become the architects of calculation, navigating the labyrinth of numbers with precision and purpose.
+With each multiplication and subtraction, we traverse the landscape of mathematical possibility, inching closer to the elusive answer that lies at the heart of the equation.
+Yet, beyond the mere manipulation of numbers, lies a deeper exploration of patterns and relationships, where the beauty of mathematics reveals itself in all its glory.
+For in the quest to solve 5 times 7 minus 6, we not only decipher the language of numbers but also uncover the timeless elegance that underpins the universe of mathematics."
+
+Answer:5*7-6=?
+
+Question4:
+"In the realm of mathematical operations, where numbers converge and diverge in a symphony of calculation, we find ourselves confronted with the enigmatic equation of 6 multiplied by 6 divided by 9.
+As we embark on this journey of numerical exploration, our minds become adept navigators, charting a course through the complex terrain of arithmetic.
+With each multiplication and division, we traverse the vast expanse of mathematical possibility, seeking to unveil the hidden harmony inherent within the equation.
+Yet, beyond the mere manipulation of numbers, lies a deeper understanding of proportions and ratio, where the elegance of mathematics manifests itself in the simplest of expressions.
+For in the pursuit of solving 6 times 6 divided by 9, we not only deepen our understanding of arithmetic but also gain insight into the fundamental principles that govern the universe."
+
+Answer:6*6/9=?

@@ -2,7 +2,11 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <sstream> 
+#include <cmath> 
+#include <algorithm>
 #include "page.h"
+
 
 using namespace std;
 
@@ -50,5 +54,20 @@ class FigBook : public Book{
         char** get_figure(fstream& fin, int* fig_h);
         // void preview();
 };
+class AnimatedBook : public Book {
+    public:
+        AnimatedBook(string filename, string title, string author, string category);
+};
 
+class MorseCodeBook : public Book {
+    public:
+        MorseCodeBook(string filename, string title, string author, string category);
+};
+
+class FormulaBook : public Book {
+    public:
+        FormulaBook(string filename, string title, string author, string category);
+        void readContent();
+        double evaluateExpression(const string &expression);
+};
 #endif

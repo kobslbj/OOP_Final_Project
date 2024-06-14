@@ -7,7 +7,6 @@ book1.txt T
 image_book.txt F
 image_book.txt F
 image_book.txt F
-image_book.txt F
-image_book.txt F
-image_book.txt F
-image_book.txt F
+formula_book1.txt B
+formula_book1.txt B
+formula_book1.txt B

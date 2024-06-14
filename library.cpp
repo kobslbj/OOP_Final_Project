@@ -68,17 +68,25 @@ Library::Library(){
             }
         }
 
-        if(type == 'T'){
-            TxtBook *tb = new TxtBook(filename, title, author, category);
-            books.push_back(tb);            
-        }
-        else if(type == 'F'){
-            FigBook *fb = new FigBook(filename, title, author, category);
-            books.push_back(fb);        
+        if (type == 'T') {
+            TxtBook* tb = new TxtBook(filename, title, author, category);
+            books.push_back(tb);
+        } else if (type == 'F') {
+            FigBook* fb = new FigBook(filename, title, author, category);
+            books.push_back(fb);
+        } else if (type == 'A') {  
+            AnimatedBook* ab = new AnimatedBook(filename, title, author, category);
+            books.push_back(ab);
+        } else if (type == 'M') { 
+            MorseCodeBook* mb = new MorseCodeBook(filename, title, author, category);
+            books.push_back(mb);
+        } else if (type == 'B') {  
+            FormulaBook* fb = new FormulaBook(filename, title, author, category);
+            books.push_back(fb);
         }
     }
     inList.close();
-};
+}
 
 Library::~Library(){
     for(auto& b: books) delete b;

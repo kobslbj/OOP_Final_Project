@@ -20,6 +20,7 @@ class Page{
         void setPageCont(char** content);
         int getPageNum(); //
         void showPageCont();  // display content pointer
+        char** getContent(); 
 };
 
 #endif
