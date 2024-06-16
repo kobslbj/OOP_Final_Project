@@ -24,3 +24,11 @@ void Page::showPageCont(){
 char** Page::getContent() { 
     return content;
 }
+
+int Page::getWidth() const {
+    return page_width;
+}
+
+int Page::getHeight() const {
+    return page_height;
+}

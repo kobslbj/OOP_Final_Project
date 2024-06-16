@@ -13,6 +13,13 @@ using namespace std;
 #ifndef _BOOK_H_
 #define _BOOK_H_
 
+
+struct Figure {
+    vector<string> lines;
+    int startLine;
+    int endLine;
+    int page;
+};
 class Book{
     protected:
         string filename; 
@@ -49,9 +56,15 @@ class TxtBook : public Book{
 
 class FigBook : public Book{
     public:
+        Figure figure;
+        bool figureLoaded;
         FigBook(string filename, string title, string author, string category);
+        void loadFigure(int page, int start, int end);
+        void moveFigure(char direction);
+        void updatePageWithFigure();
         void readContent();
         char** get_figure(fstream& fin, int* fig_h);
+        void adjustTextAroundFigure(char **page_cont, char **fig_cont, int &line_cnt, int fig_h, int WIDTH);
         // void preview();
 };
 class AnimatedBook : public Book {
