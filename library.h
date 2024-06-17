@@ -26,9 +26,13 @@ public:
 
     // User management
     void addUser();
-    void borrowBook(const string& userID, const string& bookID, const string& date);
+    bool borrowBook(const string& userID, const string& bookID, const string& date);
     void returnBook(const string& userID, const string& bookID, const string& date);
     vector<string> getMostPopularBooks();
+
+    void borrowBookInteraction();
+
+    void returnBookInteraction();
 
 protected:
     int idx;

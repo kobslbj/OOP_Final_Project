@@ -116,6 +116,7 @@ char Library::getKey(){
 }
 
 void Library::operation(char opCode) {
+    int maxIdx = books.size() + 3; // 最大的 idx 值，包括書籍、Quit、Add User、Borrow Book、Return Book
     switch (opCode) {
         case 'L': 
             if (idx > 1 && idx <= books.size()) idx--; 
@@ -124,29 +125,33 @@ void Library::operation(char opCode) {
             if (idx >= 0 && idx < books.size()) idx++; 
             break;
         case 'U': 
-            if (idx > books.size()) idx = books.size();
-            else if (idx < 5)       idx = 0;
-            else                    idx -= 5;
+            if (idx > 0) idx--; // 簡單地減少 idx，如果在最頂端將循環到底部
+            else idx = maxIdx; // 從頂部循環到底部
             break;
         case 'D': 
-            if (idx >= books.size() - 5) idx = books.size() + 1; 
-            else if (idx == 0)          idx = 1;
-            else                        idx += 5;
+            if (idx < maxIdx) idx++; // 簡單地增加 idx，如果在底部將循環到頂部
+            else idx = 0; // 從底部循環到頂部
             break;
         case 'E':  
             if (idx == books.size()) {
-                exit = true;  
+                exit = true;
             } else if (idx == 0) {
                 searchBook();
             } else if (idx > 0 && idx < books.size()) {
-                books[idx - 1]->preview(); 
+                books[idx - 1]->preview();
             } else if (idx == books.size() + 1) {
                 addUser();
+            } else if (idx == books.size() + 2) {
+                borrowBookInteraction();
+            } else if (idx == books.size() + 3) {
+                returnBookInteraction();
             }
             break;
     }
     return;
 }
+
+
 
 
 void Library::coutMainPage(){
@@ -186,11 +191,25 @@ void Library::coutMainPage(){
     cout << endl;
     cout << endl;
 
-    // display "Add user"
+        // display "Add user"
     if(idx == books.size() + 1) cout << WHITE_B;
     cout << " Add user";
     for(int i = 0; i < 95; i++) cout << " ";
     if(idx == books.size() + 1) cout << NONE; // 確保添加用戶反白後立即關閉
+    cout << endl;
+    cout << endl;
+
+    // display "Borrow Book"
+    if (idx == books.size() + 2) cout << WHITE_B;
+    cout << " Borrow Book";
+    if (idx == books.size() + 2) cout << NONE;
+    cout << endl;
+    cout << endl;
+
+    // display "Return Book"
+    if (idx == books.size() + 3) cout << WHITE_B;
+    cout << " Return Book";
+    if (idx == books.size() + 3) cout << NONE;
     cout << endl;
     cout << endl;
 
@@ -349,15 +368,16 @@ void Library::addUser() {
     }
 }
 
-void Library::borrowBook(const string& userID, const string& bookID, const string& date) {
+bool Library::borrowBook(const string& userID, const string& bookID, const string& date) {
     // Find user and book, add to borrowing history
     for (auto& user : users) {
         if (user->userID == userID) {
             user->borrowBook(bookID, date);
             bookPopularity[bookID]++;  // Increase book popularity
-            break;
+            return true; // 借书成功
         }
     }
+    return false; // 没有找到用户，借书失败
 }
 
 void Library::returnBook(const string& userID, const string& bookID, const string& date) {
@@ -381,4 +401,71 @@ vector<string> Library::getMostPopularBooks() {
         result.push_back(book.first);
     }
     return result;
+}
+
+void Library::borrowBookInteraction() {
+    cout << "Enter user ID: ";
+    string userID;
+    cin >> userID;
+
+    // 检查用户是否存在
+    auto it = find_if(users.begin(), users.end(), [&userID](const User* user) {
+        return user->userID == userID;
+    });
+
+    if (it == users.end()) {
+        // 如果用户不存在
+        cout << "User ID not found. Would you like to add a new user? (yes/no): ";
+        string response;
+        cin >> response;
+        if (response == "yes" || response == "Yes") {
+            // 如果用户同意添加新用户
+            addUser();
+            // 再次提示输入用户ID，因为可能用户不想借书了或者希望使用另一个ID
+            cout << "Enter user ID for borrowing the book: ";
+            cin >> userID;
+        } else {
+            // 如果用户不想添加，退出交互
+            cout << "Operation cancelled." << endl;
+            return;
+        }
+    }
+
+    cout << "Enter book ID: ";
+    string bookID;
+    cin >> bookID;
+
+    // 执行借书操作
+    bool borrowed = borrowBook(userID, bookID, "2024-01-01");  // Use current date or input
+    if (borrowed) {
+        cout << "Book borrowed successfully!\n";
+    } else {
+        cout << "Book borrowing failed. Please check book ID and availability.\n";
+    }
+    
+    string tmp;
+    cout << "Press e to continue...";
+    cin >> tmp;
+    if (tmp == "e") {
+        cout << "Continuing..." << endl;
+    }
+}
+
+void Library::returnBookInteraction() {
+    cout << "Enter user ID: ";
+    string userID;
+    cin >> userID;
+
+    cout << "Enter book ID: ";
+    string bookID;
+    cin >> bookID;
+
+    returnBook(userID, bookID, "2024-01-01"); // Use return date or input
+    cout << "Book returned successfully!\n";
+    string tmp;
+    cout << "Press e to continue...";
+    cin >> tmp;
+    if (tmp == "e") {
+        cout << "Continuing..." << endl;
+    }
 }
