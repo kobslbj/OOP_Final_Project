@@ -115,37 +115,39 @@ char Library::getKey(){
     }
 }
 
-void Library::operation(char opCode){
-    switch (opCode)
-    {
+void Library::operation(char opCode) {
+    switch (opCode) {
         case 'L': 
-            if(idx > 1 && idx < books.size())     idx--; 
+            if (idx > 1 && idx <= books.size()) idx--; 
             break;
         case 'R': 
-            if(idx > 0 && idx < books.size() - 1) idx++; 
+            if (idx >= 0 && idx < books.size()) idx++; 
             break;
         case 'U': 
-            if(idx > books.size() - 1) idx = books.size() - 1;
-            else if(idx < 5)           idx = 0;
-            else                       idx = idx - 5;
+            if (idx > books.size()) idx = books.size();
+            else if (idx < 5)       idx = 0;
+            else                    idx -= 5;
             break;
         case 'D': 
-            if(idx > books.size() - 5) idx = books.size();
-            else if(idx == 0)          idx = 1;
-            else                       idx = idx + 5;
+            if (idx >= books.size() - 5) idx = books.size() + 1; 
+            else if (idx == 0)          idx = 1;
+            else                        idx += 5;
             break;
         case 'E':  
             if (idx == books.size()) {
                 exit = true;  
             } else if (idx == 0) {
-                searchBook(); 
-            } else if (idx != 0) {
+                searchBook();
+            } else if (idx > 0 && idx < books.size()) {
                 books[idx - 1]->preview(); 
+            } else if (idx == books.size() + 1) {
+                addUser();
             }
-            break;        
+            break;
     }
     return;
 }
+
 
 void Library::coutMainPage(){
     system("clear");
@@ -157,8 +159,8 @@ void Library::coutMainPage(){
     cout << "Welcome to NYCU library system !!!";
     for(int i = 0; i < 33; i++) cout << " ";
     cout << endl;
-    cout << endl;   
-    
+    cout << endl;
+
     // display "Search"
     if(idx == 0) cout << WHITE_B;
     cout << " Search";
@@ -167,7 +169,6 @@ void Library::coutMainPage(){
     cout << endl;
     cout << endl;
 
-
     // display "Books"
     cout << " Books" << endl;
     int bookNum = 0;
@@ -175,12 +176,21 @@ void Library::coutMainPage(){
         coutBookIcon(bookNum);
         bookNum += 5;
     }
+    // display "Total books number"
+    cout << " Total books number: " << books.size()-1 << endl;
 
     // display "Quit"
     if(idx == books.size()) cout << WHITE_B;
     cout << " Quit";
+    if(idx == books.size()) cout << NONE; // 確保退出反白後立即關閉
+    cout << endl;
+    cout << endl;
+
+    // display "Add user"
+    if(idx == books.size() + 1) cout << WHITE_B;
+    cout << " Add user";
     for(int i = 0; i < 95; i++) cout << " ";
-    cout << NONE;
+    if(idx == books.size() + 1) cout << NONE; // 確保添加用戶反白後立即關閉
     cout << endl;
     cout << endl;
 
@@ -194,11 +204,10 @@ void Library::coutMainPage(){
     cout << endl;
     for(int i = 0; i < 100; i++) cout << "=";
     cout << endl;
-    
-
 
     return;
 }
+
 
 void Library::coutBookIcon(int bookNum){
     for(int j = 0; j < 7; j++){
@@ -317,4 +326,59 @@ void Library::searchBook() {
     if (tmp == "e") {
         cout << "Continuing..." << endl;
     }
+}
+
+void Library::addUser() {
+    string userID, name;
+    cout << "Enter user ID: ";
+    cin >> userID;
+    cout << "Enter name: ";
+    cin >> name;
+    users.push_back(new User{userID, name});
+    cout<< "User added successfully!" << endl;
+    cout << "Current Users:\n";
+    for (const auto& user : users) {
+        cout << "User ID: " << user->userID << ", Name: " << user->name << "\n";
+    }
+    cout << endl;
+    string tmp;
+    cout << "Press e to continue...";
+    cin >> tmp;
+    if (tmp == "e") {
+        cout << "Continuing..." << endl;
+    }
+}
+
+void Library::borrowBook(const string& userID, const string& bookID, const string& date) {
+    // Find user and book, add to borrowing history
+    for (auto& user : users) {
+        if (user->userID == userID) {
+            user->borrowBook(bookID, date);
+            bookPopularity[bookID]++;  // Increase book popularity
+            break;
+        }
+    }
+}
+
+void Library::returnBook(const string& userID, const string& bookID, const string& date) {
+    for (auto& user : users) {
+        if (user->userID == userID) {
+            user->returnBook(bookID, date);
+            // Optional: Decrease popularity
+            break;
+        }
+    }
+}
+
+vector<string> Library::getMostPopularBooks() {
+    vector<pair<string, int>> sortedBooks(bookPopularity.begin(), bookPopularity.end());
+    sort(sortedBooks.begin(), sortedBooks.end(), [](const pair<string, int>& a, const pair<string, int>& b) {
+        return a.second > b.second;
+    });
+
+    vector<string> result;
+    for (const auto& book : sortedBooks) {
+        result.push_back(book.first);
+    }
+    return result;
 }

@@ -1,30 +1,40 @@
 #include <bits/stdc++.h>
 #include "book.h"
+#include "user.h"
 
 using namespace std;
 
 class Library{
-    public:
-        Library();
-        ~Library();
+public:
+    Library();
+    ~Library();
 
-        // keyboard
-        virtual char getKey();
-        
-        // operation 
-        virtual void operation(char opCode);
+    // Keyboard handling
+    virtual char getKey();
+    
+    // Operation logic
+    virtual void operation(char opCode);
 
-        // display function
-        virtual void coutMainPage();
-        virtual void coutBookIcon(int bookNum);
-        virtual void searchBook(); 
-        
-        // get function
-        virtual int  getIdx();
-        virtual bool getExit();
+    // Display functions
+    virtual void coutMainPage();
+    virtual void coutBookIcon(int bookNum);
+    virtual void searchBook(); 
+    
+    // Utility functions
+    virtual int getIdx();
+    virtual bool getExit();
 
-    protected:
-        int idx;
-        bool exit;
-        vector<Book*> books;
+    // User management
+    void addUser();
+    void borrowBook(const string& userID, const string& bookID, const string& date);
+    void returnBook(const string& userID, const string& bookID, const string& date);
+    vector<string> getMostPopularBooks();
+
+protected:
+    int idx;
+    bool exit;
+    vector<Book*> books;
+    vector<User*> users;
+    map<string, int> bookPopularity; // tracks popularity of books by bookID
 };
+
